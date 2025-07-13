@@ -11,7 +11,7 @@ const Userlogin = require("./routes/login/User");
 dotenv.config();
 
 const app = express();
-const server = http.createServer(app);
+const server = http.createServer(app); // ✅ Needed for Socket.IO
 const io = new Server(server, {
     cors: {
         origin: '*',
@@ -30,7 +30,12 @@ connectDB();
 app.use('/notifications', notificationRoutes);
 app.use('/auth', Userlogin);
 
-// ✅ Socket.IO Logic (inline instead of socket.js)
+// ✅ Default route to test server is live
+app.get('/', (req, res) => {
+    res.send('✅ Server is Live!');
+});
+
+// ✅ Socket.IO logic
 io.on('connection', (socket) => {
     console.log('🔌 Client connected:', socket.id);
 
@@ -46,8 +51,8 @@ io.on('connection', (socket) => {
     });
 });
 
-// Start Server
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
+// ✅ Use server.listen (not app.listen)
+const PORT = process.env.PORT || 10000;
+server.listen(PORT, '0.0.0.0', () => {
+    console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
 });
